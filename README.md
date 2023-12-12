@@ -7,16 +7,16 @@ Objective: Determine the total quantity of items in stock for each warehouse.
 Query:
 
     SELECT    
-    w.warehouseCode,
-    
+    w.warehouseCode, 
     w.warehouseName,
-    
     SUM(p.quantityInStock) AS totalQuantityInStock
-    FROM
     
+    FROM
     mintclassics.products p
+    
     INNER JOIN
     mintclassics.warehouses w ON p.warehouseCode = w.warehouseCode
+    
     GROUP BY
     w.warehouseCode, w.warehouseName;
 
@@ -30,18 +30,24 @@ Query:
     w.warehouseName,
     COUNT(p.productCode) AS numberOfItems,
     SUM(p.quantityInStock) AS totalQuantityInStock,
+    
     CASE WHEN COUNT(p.productCode) = 0 THEN 'Yes' ELSE 'No' END AS canBeEliminated
+    
     FROM
     mintclassics.warehouses w
+    
     LEFT JOIN
     mintclassics.products p ON w.warehouseCode = p.warehouseCode
+    
     GROUP BY
     w.warehouseCode, w.warehouseName;
 
 Observations:
 
 Warehouse 'b' (East) has the highest inventory (219,183 units).
+
 Warehouse 'd' (South) has the lowest inventory (79,380 units).
+
 All warehouses currently have items and are not candidates for elimination.
 
 ## 2. Sales and Inventory Relationship
@@ -49,16 +55,20 @@ All warehouses currently have items and are not candidates for elimination.
 Objective: Examine the total quantity ordered and total sales for each product.
 
 Query:
-SELECT
+    
+    SELECT
     p.productCode,
     p.productName,
     SUM(od.quantityOrdered) AS totalQuantityOrdered,
     SUM(od.priceEach * od.quantityOrdered) AS totalSales
-FROM
+    
+    FROM
     mintclassics.products p
-JOIN
+    
+    JOIN
     mintclassics.orderdetails od ON p.productCode = od.productCode
-GROUP BY
+    
+    GROUP BY
     p.productCode, p.productName;
 
 - Products with Consistently Low Sales:
@@ -66,18 +76,23 @@ Objective: Identify products with consistently low sales.
 
 Query:
 
-SELECT
+    SELECT
     od.productCode,
     p.productName,
     AVG(quantityOrdered) AS averageQuantityOrdered
-FROM
+    
+    FROM
     mintclassics.orderdetails od
-JOIN
+    
+    JOIN
     mintclassics.products p ON od.productCode = p.productCode
-GROUP BY
+    
+    GROUP BY
     productCode, productName
-ORDER BY
+    
+    ORDER BY
     averageQuantityOrdered ASC;
+
 Observations:
 
 Products like 'S18_2795', 'S24_3420', etc., have consistently low sales.
@@ -88,62 +103,78 @@ Objective: Retrieve an overview of products currently in inventory.
 
 Query:
 
-SELECT
+    SELECT
     productCode,
     productName,
     quantityInStock,
     buyPrice,
     MSRP
-FROM
+    
+    FROM
     mintclassics.products;
 
 - Top-Selling Products:
 Objective: Identify the top-selling products based on quantity ordered.
 
 Query:
-SELECT
+    
+    SELECT
     productCode,
     priceEach,
     SUM(quantityOrdered) AS totalQuantityOrdered
-FROM
+    
+    FROM
     mintclassics.orderdetails
-GROUP BY
+    
+    GROUP BY
     productCode, priceEach
-ORDER BY
+    
+    ORDER BY
     totalQuantityOrdered DESC
-LIMIT 10;
+    
+    LIMIT 10;
+
 - Overall Sales Trend Over Time:
 Objective: Analyze the overall sales trend over time, grouped by year and month.
 
 Query:
 
-SELECT
+    SELECT
     YEAR(os.orderDate) AS orderYear,
     MONTH(os.orderDate) AS orderMonth,
     SUM(priceEach * quantityOrdered) AS monthlySales
-FROM
+    
+    FROM
     mintclassics.orders os
-JOIN
+    
+    JOIN
     mintclassics.orderdetails od ON os.orderNumber = od.orderNumber
-GROUP BY
+    
+    GROUP BY
     orderYear, orderMonth
-ORDER BY
+    
+    ORDER BY
     orderYear, orderMonth;
+
 - Sales Distribution Across Product Lines:
 Objective: Understand how sales are distributed across different product lines.
 
 Query:
 
-SELECT
+    SELECT
     p.productLine,
     SUM(od.priceEach * od.quantityOrdered) AS totalSales
-FROM
+    
+    FROM
     mintclassics.orderdetails od
-JOIN
+    
+    JOIN
     mintclassics.products p ON od.productCode = p.productCode
-GROUP BY
+    
+    GROUP BY
     productLine
-ORDER BY
+    
+    ORDER BY
     totalSales DESC;
 
 ## 4. Customer Purchase Analysis
@@ -152,20 +183,24 @@ Objective: Identify customers with the highest total purchase amounts.
 
 Query:
 
-
-SELECT
+    SELECT
     pp.customerNumber,
     c.customerName,
     SUM(amount) AS totalPurchaseAmount
-FROM
+    
+    FROM
     mintclassics.payments pp
-JOIN
+    
+    JOIN
     mintclassics.customers c ON pp.customerNumber = c.customerNumber
-GROUP BY
+    
+    GROUP BY
     customerNumber, customerName
-ORDER BY
+    
+    ORDER BY
     totalPurchaseAmount DESC
-LIMIT 10;
+    
+    LIMIT 10;
 
 
 ## Conclusion:
