@@ -5,35 +5,37 @@
 Objective: Determine the total quantity of items in stock for each warehouse.
 
 Query:
-SELECT
+
+    SELECT    
     w.warehouseCode,
     
     w.warehouseName,
     
     SUM(p.quantityInStock) AS totalQuantityInStock
-
-FROM
+    FROM
+    
     mintclassics.products p
-INNER JOIN
+    INNER JOIN
     mintclassics.warehouses w ON p.warehouseCode = w.warehouseCode
-GROUP BY
+    GROUP BY
     w.warehouseCode, w.warehouseName;
 
 - Items Storage & Elimination Possibility:
 Objective: Identify warehouses with their item count, total quantity in stock, and assess if any warehouse could potentially be eliminated.
 
 Query:
-SELECT
+    
+    SELECT
     w.warehouseCode,
     w.warehouseName,
     COUNT(p.productCode) AS numberOfItems,
     SUM(p.quantityInStock) AS totalQuantityInStock,
     CASE WHEN COUNT(p.productCode) = 0 THEN 'Yes' ELSE 'No' END AS canBeEliminated
-FROM
+    FROM
     mintclassics.warehouses w
-LEFT JOIN
+    LEFT JOIN
     mintclassics.products p ON w.warehouseCode = p.warehouseCode
-GROUP BY
+    GROUP BY
     w.warehouseCode, w.warehouseName;
 
 Observations:
