@@ -7,8 +7,11 @@ Objective: Determine the total quantity of items in stock for each warehouse.
 Query:
 SELECT
     w.warehouseCode,
+    
     w.warehouseName,
+    
     SUM(p.quantityInStock) AS totalQuantityInStock
+
 FROM
     mintclassics.products p
 INNER JOIN
